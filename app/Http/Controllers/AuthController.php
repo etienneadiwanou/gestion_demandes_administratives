@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class AuthController extends Controller
         $token = $user->createToken('adminflow')->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('role', 'department'),
+            'user' => UserResource::make($user->load('role', 'department')),
             'token' => $token,
         ]);
     }
@@ -47,7 +48,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user()->load('role', 'department'));
+        return UserResource::make($request->user()->load('role', 'department'));
     }
 
     public function updatePassword(Request $request)

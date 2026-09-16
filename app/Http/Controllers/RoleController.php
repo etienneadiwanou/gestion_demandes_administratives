@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 
 class RoleController extends Controller
 {
     public function index()
     {
-        return Role::with('permissions')->orderBy('nom')->get();
+        return RoleResource::collection(Role::with('permissions')->orderBy('nom')->get());
     }
 
     public function store(StoreRoleRequest $request)
@@ -23,12 +24,12 @@ class RoleController extends Controller
             $role->permissions()->sync($request->input('permissions'));
         }
 
-        return response()->json($role->load('permissions'), 201);
+        return RoleResource::make($role->load('permissions'))->response()->setStatusCode(201);
     }
 
     public function show(Role $role)
     {
-        return $role->load('permissions');
+        return RoleResource::make($role->load('permissions'));
     }
 
     public function update(UpdateRoleRequest $request, Role $role)
@@ -41,7 +42,7 @@ class RoleController extends Controller
             $role->permissions()->sync($request->input('permissions'));
         }
 
-        return $role->load('permissions');
+        return RoleResource::make($role->load('permissions'));
     }
 
     public function destroy(Role $role)

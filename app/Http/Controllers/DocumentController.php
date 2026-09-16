@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Resources\DocumentResource;
 use App\Models\Demande;
 use App\Models\Document;
 use App\Services\DocumentService;
@@ -22,7 +23,7 @@ class DocumentController extends Controller
 
         $document = $this->documentService->ajouter($demande, $request->user(), $request->file('fichier'));
 
-        return response()->json($document, 201);
+        return DocumentResource::make($document->load('user'))->response()->setStatusCode(201);
     }
 
     public function download(Document $document)

@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTypeDemandeRequest;
 use App\Http\Requests\UpdateTypeDemandeRequest;
+use App\Http\Resources\TypeDemandeResource;
 use App\Models\TypeDemande;
 
 class TypeDemandeController extends Controller
 {
     public function index()
     {
-        return TypeDemande::with('champs')->orderBy('categorie')->orderBy('nom')->get();
+        return TypeDemandeResource::collection(
+            TypeDemande::with('champs')->orderBy('categorie')->orderBy('nom')->get()
+        );
     }
 
     public function store(StoreTypeDemandeRequest $request)
@@ -19,12 +22,12 @@ class TypeDemandeController extends Controller
 
         $typeDemande = TypeDemande::create($request->validated());
 
-        return response()->json($typeDemande, 201);
+        return TypeDemandeResource::make($typeDemande)->response()->setStatusCode(201);
     }
 
     public function show(TypeDemande $typeDemande)
     {
-        return $typeDemande->load('champs');
+        return TypeDemandeResource::make($typeDemande->load('champs'));
     }
 
     public function update(UpdateTypeDemandeRequest $request, TypeDemande $typeDemande)
@@ -33,7 +36,7 @@ class TypeDemandeController extends Controller
 
         $typeDemande->update($request->validated());
 
-        return $typeDemande;
+        return TypeDemandeResource::make($typeDemande);
     }
 
     public function destroy(TypeDemande $typeDemande)

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreChampDemandeRequest;
 use App\Http\Requests\UpdateChampDemandeRequest;
+use App\Http\Resources\ChampDemandeResource;
 use App\Models\ChampDemande;
 
 class ChampDemandeController extends Controller
@@ -17,7 +18,7 @@ class ChampDemandeController extends Controller
 
         $champDemande = ChampDemande::create($request->validated());
 
-        return response()->json($champDemande, 201);
+        return ChampDemandeResource::make($champDemande)->response()->setStatusCode(201);
     }
 
     public function update(UpdateChampDemandeRequest $request, ChampDemande $champDemande)
@@ -26,7 +27,7 @@ class ChampDemandeController extends Controller
 
         $champDemande->update($request->validated());
 
-        return $champDemande;
+        return ChampDemandeResource::make($champDemande);
     }
 
     public function destroy(ChampDemande $champDemande)

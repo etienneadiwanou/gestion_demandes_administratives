@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 
 class UserController extends Controller
@@ -12,9 +13,9 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        return User::with(['role', 'department'])
-            ->orderBy('name')
-            ->paginate(20);
+        return UserResource::collection(
+            User::with(['role', 'department'])->orderBy('name')->paginate(20)
+        );
     }
 
     public function store(StoreUserRequest $request)
@@ -23,14 +24,14 @@ class UserController extends Controller
 
         $user = User::create($request->validated());
 
-        return response()->json($user->load('role', 'department'), 201);
+        return UserResource::make($user->load('role', 'department'))->response()->setStatusCode(201);
     }
 
     public function show(User $user)
     {
         $this->authorize('view', $user);
 
-        return $user->load('role', 'department');
+        return UserResource::make($user->load('role', 'department'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
@@ -45,7 +46,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return $user->load('role', 'department');
+        return UserResource::make($user->load('role', 'department'));
     }
 
     public function destroy(User $user)

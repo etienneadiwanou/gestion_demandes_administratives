@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAffectationRequest;
+use App\Http\Resources\AffectationResource;
 use App\Models\Demande;
 use App\Models\User;
 use App\Services\AffectationService;
@@ -27,6 +28,8 @@ class AffectationController extends Controller
             $request->validated('commentaire'),
         );
 
-        return response()->json($affectation->load('agent', 'affectePar'), 201);
+        return AffectationResource::make($affectation->load('agent', 'affectePar'))
+            ->response()
+            ->setStatusCode(201);
     }
 }

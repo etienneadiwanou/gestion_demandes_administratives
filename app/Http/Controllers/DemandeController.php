@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\RoleSlug;
 use App\Http\Requests\StoreDemandeRequest;
 use App\Http\Requests\UpdateDemandeRequest;
+use App\Http\Resources\DemandeResource;
 use App\Models\Demande;
 use App\Services\DemandeService;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class DemandeController extends Controller
             $query->where('user_id', $request->user()->id);
         }
 
-        return $query->latest()->paginate(20);
+        return DemandeResource::collection($query->latest()->paginate(20));
     }
 
     public function store(StoreDemandeRequest $request)
@@ -40,27 +41,37 @@ class DemandeController extends Controller
 
         $demande = $this->demandeService->creer($request->user(), $request->validated());
 
-        return response()->json($demande, 201);
+        return DemandeResource::make($demande->load(['user', 'typeDemande', 'department']))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(Demande $demande)
     {
         $this->authorize('view', $demande);
 
-        return $demande->load(['typeDemande.champs', 'valeurs', 'documents', 'affectations', 'validations']);
+        return DemandeResource::make($demande->load([
+            'user', 'typeDemande.champs', 'department', 'valeurs.champDemande',
+            'documents.user', 'affectations.agent', 'affectations.affectePar',
+            'validations.validateur',
+        ]));
     }
 
     public function update(UpdateDemandeRequest $request, Demande $demande)
     {
         $this->authorize('update', $demande);
 
-        return $this->demandeService->mettreAJour($demande, $request->validated());
+        $demande = $this->demandeService->mettreAJour($demande, $request->validated());
+
+        return DemandeResource::make($demande->load(['user', 'typeDemande', 'department']));
     }
 
     public function submit(Demande $demande)
     {
         $this->authorize('submit', $demande);
 
-        return $this->demandeService->soumettre($demande);
+        $demande = $this->demandeService->soumettre($demande);
+
+        return DemandeResource::make($demande->load(['user', 'typeDemande', 'department']));
     }
 }

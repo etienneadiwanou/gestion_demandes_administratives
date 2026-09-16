@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
+use App\Http\Resources\PermissionResource;
 use App\Models\Permission;
 
 class PermissionController extends Controller
@@ -12,7 +13,7 @@ class PermissionController extends Controller
     {
         $this->authorize('viewAny', Permission::class);
 
-        return Permission::orderBy('module')->orderBy('nom')->get();
+        return PermissionResource::collection(Permission::orderBy('module')->orderBy('nom')->get());
     }
 
     public function store(StorePermissionRequest $request)
@@ -21,14 +22,14 @@ class PermissionController extends Controller
 
         $permission = Permission::create($request->validated());
 
-        return response()->json($permission, 201);
+        return PermissionResource::make($permission)->response()->setStatusCode(201);
     }
 
     public function show(Permission $permission)
     {
         $this->authorize('view', $permission);
 
-        return $permission;
+        return PermissionResource::make($permission);
     }
 
     public function update(UpdatePermissionRequest $request, Permission $permission)
@@ -37,7 +38,7 @@ class PermissionController extends Controller
 
         $permission->update($request->validated());
 
-        return $permission;
+        return PermissionResource::make($permission);
     }
 
     public function destroy(Permission $permission)

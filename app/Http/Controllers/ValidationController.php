@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\DecisionValidation;
 use App\Http\Requests\StoreValidationRequest;
+use App\Http\Resources\ValidationResource;
 use App\Models\Demande;
 use App\Services\ValidationService;
 
@@ -25,6 +26,8 @@ class ValidationController extends Controller
             $request->validated('commentaire'),
         );
 
-        return response()->json($validation, 201);
+        return ValidationResource::make($validation->load('validateur'))
+            ->response()
+            ->setStatusCode(201);
     }
 }
