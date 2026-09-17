@@ -21,10 +21,10 @@ class AdminUserSeeder extends Seeder
         $roleAdmin = Role::where('slug', RoleSlug::Administrateur->value)->first();
 
         User::firstOrCreate(
-            ['email' => env('ADMIN_EMAIL', 'admin@adminflow.test')],
+            ['email' => env('ADMIN_EMAIL', )],
             [
-                'name' => env('ADMIN_NAME', 'Administrateur AdminFlow'),
-                'password' => env('ADMIN_PASSWORD', 'password'), // hashé automatiquement (cast 'hashed')
+                'name' => env('ADMIN_NAME', ),
+                'password' => env('ADMIN_PASSWORD', ), // hashé automatiquement (cast 'hashed')
                 'role_id' => $roleAdmin?->id,
                 'actif' => true,
             ]
