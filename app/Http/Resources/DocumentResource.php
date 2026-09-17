@@ -15,6 +15,10 @@ class DocumentResource extends JsonResource
             'type_mime' => $this->type_mime,
             'taille' => $this->taille,
             'uploaded_by' => new UserResource($this->whenLoaded('user')),
+            'demande' => $this->whenLoaded('demande', fn () => [
+                'id' => $this->demande->id,
+                'reference' => $this->demande->reference,
+            ]),
             'created_at' => $this->created_at,
         ];
     }

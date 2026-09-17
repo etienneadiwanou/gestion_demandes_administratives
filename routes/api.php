@@ -3,6 +3,7 @@
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChampDemandeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DocumentController;
@@ -20,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/password', [AuthController::class, 'updatePassword']);
+
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
     // Référentiels (CRUD simple, autorisation via les Policies).
     Route::apiResource('departments', DepartmentController::class);
@@ -47,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/documents', [DocumentController::class, 'store']);
     });
 
+    Route::get('/documents', [DocumentController::class, 'index']);
     Route::get('/documents/{document}/download', [DocumentController::class, 'download']);
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy']);
 });

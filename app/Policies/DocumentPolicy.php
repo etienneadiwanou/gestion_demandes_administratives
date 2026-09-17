@@ -8,6 +8,11 @@ use App\Models\User;
 
 class DocumentPolicy
 {
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
     // L'autorisation d'ajout d'un document se fait via
     // DemandePolicy::uploadDocument (le document n'existe pas encore).
 

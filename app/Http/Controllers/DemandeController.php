@@ -21,15 +21,20 @@ class DemandeController extends Controller
     {
         $this->authorize('viewAny', Demande::class);
 
-        // Le filtrage avancé (statut, département, période, priorité...)
-        // sera ajouté à l'étape "Recherche et filtres" (Phase 2).
-        $query = Demande::with(['typeDemande', 'department', 'user']);
+        // Le filtrage avancé (département, période, priorité...) sera
+        // ajouté à l'étape "Recherche et filtres" (Phase 2). Le filtre
+        // par statut existe déjà : nécessaire pour l'écran Affectations.
+        $query = Demande::with(['typeDemande', 'department', 'user', 'affectations.agent']);
 
         // Un employé ne voit que ses propres demandes ; agents,
         // validateurs et administrateurs voient l'ensemble (le
         // périmètre par département pourra être affiné plus tard).
         if ($request->user()->hasRole(RoleSlug::Employe) || ! $request->user()->role) {
             $query->where('user_id', $request->user()->id);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->string('statut'));
         }
 
         return DemandeResource::collection($query->latest()->paginate(20));
